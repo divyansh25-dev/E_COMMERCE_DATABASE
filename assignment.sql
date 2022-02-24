@@ -105,3 +105,41 @@ CREATE TRIGGER del
  
 
  ------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------
+
+
+
+---Queries for Mongodb Assignment---
+
+db.Enrollment.insertMany([{
+     admin : "Divyansh",
+    session:"Physics",
+    assignment:"Unit-2"
+},
+     {
+     admin : "Piyush",
+    session:"Mathematics",
+    assignment:"Unit-3"
+         },
+     {
+         admin : "Abhay",
+    session:"History",
+    assignment:"Unit-3"
+        },
+        {     
+    admin : "Shuchita",
+    session:"Accounts",
+    assignment:"Unit-6"
+        }])
+
+
+
+		------Command for Updating data ------
+
+		db.Enrollment.updateMany({admin:'Piyush'},{
+    $set : {admin : 'Raghvendra'
+        }})
+
+
+		----Command for deleting the data-----
+
+		 db.orders.deleteMany( { admin : "Abhay"} );
