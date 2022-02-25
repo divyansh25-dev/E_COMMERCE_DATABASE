@@ -102,6 +102,89 @@ CREATE TRIGGER del
 		 FOR EACH ROW
 		      EXECUTE PROCEDURE deleting_trig();
 
+
+
+
+----TRIGGERS FOR BOTH ADMIN AND PRODUCT TABLE FOR UPDATION AND DELETION-----
+create table one_change(
+one_id SERIAL PRIMARY KEY,
+e_id INT NOT NULL,
+username varchar(55),
+roles varchar(55),
+permissions varchar(55)
+)
+create table two_change(
+two_id SERIAL PRIMARY KEY,
+p_id INT NOT NULL,
+	p_name varchar(55),
+catagory varchar(55)
+)
+
+
+
+CREATE OR REPLACE FUNCTION fn_adm()
+	RETURNS TRIGGER
+	LANGUAGE PLPGSQL
+	AS
+	$$
+		BEGIN
+			IF (TG_OP = 'UPDATE') THEN
+				IF NEW.username <> OLD.username OR 
+				   NEW.roles <> OLD.roles OR 
+				   NEW.permissions <> OLD.permissions THEN
+					
+					INSERT INTO one_change(e_id,username,roles,permissions)
+					VALUES(OLD.e_id,OLD.username,OLD.roles,OLD.permissions);
+				
+				END IF;
+				RETURN NEW;
+			ELSEIF (TG_OP = 'DELETE') THEN
+				INSERT INTO one_change(e_id,username,roles,permissions)
+				VALUES(OLD.e_id,OLD.username,OLD.roles,OLD.permissions);
+			RETURN OLD;
+			END IF;
+		END;
+	$$
+
+CREATE TRIGGER xy
+BEFORE UPDATE OR DELETE 
+ON admin
+FOR EACH ROW
+EXECUTE PROCEDURE fn_adm();
+
+
+
+CREATE OR REPLACE FUNCTION fn_pro()
+	RETURNS TRIGGER
+	LANGUAGE PLPGSQL
+	AS
+	$$
+		BEGIN
+			IF (TG_OP = 'UPDATE') THEN
+				IF NEW.p_name <> OLD.p_name OR  
+				   NEW.catagory <> OLD.catagory THEN
+					
+					INSERT INTO two_change(p_id,p_name,catagory)
+					VALUES(OLD.p_id,OLD.p_name,OLD.catagory);
+				
+				END IF;
+				RETURN NEW;
+			ELSEIF (TG_OP = 'DELETE') THEN
+				INSERT INTO two_change(p_id,p_name,catagory)
+				VALUES(OLD.p_id,OLD.p_name,OLD.catagory);
+			RETURN OLD;
+			END IF;
+		END;
+	$$
+
+CREATE TRIGGER yz
+BEFORE UPDATE OR DELETE 
+ON product
+FOR EACH ROW
+EXECUTE PROCEDURE fn_pro();
+
+
+
  
 
  ------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------
